@@ -1,0 +1,10 @@
+C:\formacaodotnetalura\Aulas\Aula3\depois\CasaDoCodigo\bin\Debug\netcoreapp2.0\CasaDoCodigo.aula3.depois.deps.json
+C:\formacaodotnetalura\Aulas\Aula3\depois\CasaDoCodigo\bin\Debug\netcoreapp2.0\CasaDoCodigo.aula3.depois.runtimeconfig.json
+C:\formacaodotnetalura\Aulas\Aula3\depois\CasaDoCodigo\bin\Debug\netcoreapp2.0\CasaDoCodigo.aula3.depois.runtimeconfig.dev.json
+C:\formacaodotnetalura\Aulas\Aula3\depois\CasaDoCodigo\bin\Debug\netcoreapp2.0\CasaDoCodigo.aula3.depois.dll
+C:\formacaodotnetalura\Aulas\Aula3\depois\CasaDoCodigo\bin\Debug\netcoreapp2.0\CasaDoCodigo.aula3.depois.pdb
+C:\formacaodotnetalura\Aulas\Aula3\depois\CasaDoCodigo\obj\Debug\netcoreapp2.0\CasaDoCodigo.aula3.depois.csproj.CoreCompileInputs.cache
+C:\formacaodotnetalura\Aulas\Aula3\depois\CasaDoCodigo\obj\Debug\netcoreapp2.0\CasaDoCodigo.aula3.depois.AssemblyInfoInputs.cache
+C:\formacaodotnetalura\Aulas\Aula3\depois\CasaDoCodigo\obj\Debug\netcoreapp2.0\CasaDoCodigo.aula3.depois.AssemblyInfo.cs
+C:\formacaodotnetalura\Aulas\Aula3\depois\CasaDoCodigo\obj\Debug\netcoreapp2.0\CasaDoCodigo.aula3.depois.dll
+C:\formacaodotnetalura\Aulas\Aula3\depois\CasaDoCodigo\obj\Debug\netcoreapp2.0\CasaDoCodigo.aula3.depois.pdb

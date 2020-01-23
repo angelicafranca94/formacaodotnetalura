@@ -1,40 +1,46 @@
-﻿using System.Linq;
-using Alura.ListaLeitura.Persistencia;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Alura.ListaLeitura.Modelos;
+using Alura.ListaLeitura.Persistencia;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Formatters;
 
-namespace Alura.ListaLeitura.WebApp.Controllers
+namespace Alura.ListaLeitura.Api.Controllers
 {
     [Authorize]
-    public class LivroController : Controller
+    [ApiController]
+    [Route("api/[controller]")]
+    public class LivrosController : ControllerBase
     {
         private readonly IRepository<Livro> _repo;
 
-        public LivroController(IRepository<Livro> repository)
+        public LivrosController(IRepository<Livro> repository)
         {
             _repo = repository;
         }
 
         [HttpGet]
-        public IActionResult Novo()
+        public IActionResult ListaDeLivros()
         {
-            return View(new LivroUpload());
+            var lista = _repo.All.Select(l => l.ToApi()).ToList();
+            return Ok(lista);
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Novo(LivroUpload model)
+        [HttpGet("{id}")]
+        public IActionResult Recuperar(int id)
         {
-            if (ModelState.IsValid)
+            var model = _repo.Find(id);
+            if (model == null)
             {
-                _repo.Incluir(model.ToLivro());
-                return RedirectToAction("Index", "Home");
+                return NotFound();
             }
-            return View(model);
+            return Ok(model.ToApi());
         }
 
-        [HttpGet]
+        [HttpGet("{id}/capa")]
         public IActionResult ImagemCapa(int id)
         {
             byte[] img = _repo.All
@@ -48,20 +54,21 @@ namespace Alura.ListaLeitura.WebApp.Controllers
             return File("~/images/capas/capa-vazia.png", "image/png");
         }
 
-        [HttpGet]
-        public IActionResult Detalhes(int id)
+        [HttpPost]
+        public IActionResult Incluir([FromBody] LivroUpload model)
         {
-            var model = _repo.Find(id);
-            if (model == null)
+            if (ModelState.IsValid)
             {
-                return NotFound();
+                var livro = model.ToLivro();
+                _repo.Incluir(livro);
+                var uri = Url.Action("Recuperar", new { id = livro.Id });
+                return Created(uri, livro); //201
             }
-            return View(model.ToModel());
+            return BadRequest();
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Detalhes(LivroUpload model)
+        [HttpPut]
+        public IActionResult Alterar([FromBody] LivroUpload model)
         {
             if (ModelState.IsValid)
             {
@@ -74,13 +81,12 @@ namespace Alura.ListaLeitura.WebApp.Controllers
                         .FirstOrDefault();
                 }
                 _repo.Alterar(livro);
-                return RedirectToAction("Index", "Home");
+                return Ok(); //200
             }
-            return View(model);
+            return BadRequest();
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
+        [HttpDelete("{id}")]
         public IActionResult Remover(int id)
         {
             var model = _repo.Find(id);
@@ -89,7 +95,7 @@ namespace Alura.ListaLeitura.WebApp.Controllers
                 return NotFound();
             }
             _repo.Excluir(model);
-            return RedirectToAction("Index", "Home");
+            return NoContent(); //203
         }
     }
 }

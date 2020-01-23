@@ -1,17 +1,19 @@
-﻿using Alura.ListaLeitura.Persistencia;
-using Alura.ListaLeitura.Seguranca;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Alura.ListaLeitura.Api.Formatters;
 using Alura.ListaLeitura.Modelos;
+using Alura.ListaLeitura.Persistencia;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Alura.WebAPI.WebApp.Formatters;
 using Microsoft.IdentityModel.Tokens;
-using System;
 
-namespace Alura.ListaLeitura.WebApp
+namespace Alura.WebAPI.Api
 {
     public class Startup
     {
@@ -28,27 +30,29 @@ namespace Alura.ListaLeitura.WebApp
                 options.UseSqlServer(Configuration.GetConnectionString("ListaLeitura"));
             });
 
-            services.AddDbContext<AuthDbContext>(options => {
-                options.UseSqlServer(Configuration.GetConnectionString("AuthDB"));
-            });
-
-            services.AddIdentity<Usuario, IdentityRole>(options =>
-            {
-                options.Password.RequiredLength = 3;
-                options.Password.RequireNonAlphanumeric = false;
-                options.Password.RequireUppercase = false;
-                options.Password.RequireLowercase = false;
-            }).AddEntityFrameworkStores<AuthDbContext>();
-
-            services.ConfigureApplicationCookie(options => {
-                options.LoginPath = "/Usuario/Login";
-            });
-
             services.AddTransient<IRepository<Livro>, RepositorioBaseEF<Livro>>();
 
             services.AddMvc(options => {
                 options.OutputFormatters.Add(new LivroCsvFormatter());
             }).AddXmlSerializerFormatters();
+
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = "JwtBearer";
+                options.DefaultChallengeScheme = "JwtBearer";
+            }).AddJwtBearer("JwtBearer", options => {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes("alura-webapi-authentication-valid")),
+                    ClockSkew = TimeSpan.FromMinutes(5),
+                    ValidIssuer = "Alura.WebApp",
+                    ValidAudience = "Postman",
+                };
+            });
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
@@ -58,15 +62,9 @@ namespace Alura.ListaLeitura.WebApp
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseStaticFiles();
             app.UseAuthentication();
 
-            app.UseMvc(routes =>
-            {
-                routes.MapRoute(
-                    name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
-            });
+            app.UseMvc();
         }
     }
 }

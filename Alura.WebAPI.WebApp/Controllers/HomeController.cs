@@ -1,38 +1,46 @@
-﻿using Alura.ListaLeitura.Persistencia;
-using Alura.ListaLeitura.Modelos;
+﻿using Alura.ListaLeitura.Modelos;
 using Alura.ListaLeitura.WebApp.Models;
+using Alura.ListaLeitura.HttpClients;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using System.Linq;
+using System;
 
 namespace Alura.ListaLeitura.WebApp.Controllers
 {
     [Authorize]
     public class HomeController : Controller
     {
-        private readonly IRepository<Livro> _repo;
+        private readonly LivroApiClient _api;
 
-        public HomeController(IRepository<Livro> repository)
+        public HomeController(LivroApiClient api)
         {
-            _repo = repository;
+            _api = api;
         }
 
-        private IEnumerable<LivroApi> ListaDoTipo(TipoListaLeitura tipo)
+        private async Task<IEnumerable<LivroApi>> ListaDoTipo(TipoListaLeitura tipo)
         {
-            return _repo.All
-                .Where(l => l.Lista == tipo)
-                .Select(l => l.ToApi())
-                .ToList();
+            var lista = await _api.GetListaLeituraAsync(tipo);
+            return lista.Livros;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
+
+            //mas como recuperar?
+
+
+            //problema é que não tenho a propriedade HttpContext na classe LivroApiClient. E agora?
+
+
+
             var model = new HomeViewModel
             {
-                ParaLer = ListaDoTipo(TipoListaLeitura.ParaLer),
-                Lendo = ListaDoTipo(TipoListaLeitura.Lendo),
-                Lidos = ListaDoTipo(TipoListaLeitura.Lidos)
+                ParaLer = await ListaDoTipo(TipoListaLeitura.ParaLer),
+                Lendo = await ListaDoTipo(TipoListaLeitura.Lendo),
+                Lidos = await ListaDoTipo(TipoListaLeitura.Lidos)
             };
             return View(model);
         }

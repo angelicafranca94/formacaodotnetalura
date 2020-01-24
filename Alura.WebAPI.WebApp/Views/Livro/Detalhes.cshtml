@@ -4,8 +4,6 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Novo Livro</h2>
-
 <main>
 
     <form class="row" role="form" enctype="multipart/form-data" asp-action="Detalhes" method="post">
@@ -16,8 +14,8 @@
             <div class="capa">
                 <img class="livro img-fluid"
                      id="imgCapa"
-                     src="/Livro/ImagemCapa/@Model.Id" 
-                     alt="@Model.Titulo" 
+                     src="/Livro/ImagemCapa/@Model.Id"
+                     alt="@Model.Titulo"
                      data-id="@Model.Id" />
 
                 <p class="py-3">
@@ -77,7 +75,7 @@
 
 </main>
 
-@section Scripts{ 
+@section Scripts{
     <script>
         $(function () {
             $('#btnExcluir').click(function () {
@@ -88,12 +86,12 @@
                 var input = this;
                 var url = $(this).val();
                 var ext = url.substring(url.lastIndexOf('.') + 1).toLowerCase();
-                if (input.files && input.files[0] && (ext == "png")) {
+                if (input.files && input.files[0] && (ext === "png")) {
                     var reader = new FileReader();
                     reader.onload = function (e) {
                         console.log("chegou aqui!");
                         $('#imgCapa').attr('src', e.target.result);
-                    }
+                    };
                     reader.readAsDataURL(input.files[0]);
                 }
                 else {
